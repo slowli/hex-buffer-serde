@@ -2,10 +2,15 @@
 name = "hex-buffer-serde"
 version = "0.1.0"
 authors = ["Alex Ostrovski <ostrovski.alex@gmail.com>"]
+readme = "README.md"
 license = "Apache-2.0"
 keywords = ["serde", "hex", "encoding", "bytes"]
 categories = ["encoding", "parsing"]
 description = "Helper for serializing byte buffers as hex strings in `serde`"
+repository = "https://github.com/slowli/hex-buffer-serde"
+
+[badges]
+travis-ci = { repository = "slowli/hex-buffer-serde" }
 
 [dependencies]
 serde = "1.0"
