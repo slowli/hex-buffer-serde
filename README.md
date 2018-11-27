@@ -1,5 +1,9 @@
 # Hex encoding helper for serde
 
+[![Travis Build Status](https://img.shields.io/travis/com/slowli/hex-buffer-serde/master.svg?label=Linux%20Build)](https://travis-ci.com/slowli/hex-buffer-serde) 
+[![License: Apache-2.0](https://img.shields.io/github/license/slowli/hex-buffer-serde.svg)](https://github.com/slowli/hex-buffer-serde/blob/master/LICENSE)
+![rust 1.30.0+ required](https://img.shields.io/badge/rust-1.30.0+-blue.svg?label=Required%20Rust)
+
 `hex-buffer-serde` is a helper crate allowing to serialize types, which logically correspond to a byte buffer,
 in hex encoding within `serde`.
 
