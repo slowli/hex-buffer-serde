@@ -164,7 +164,7 @@ impl TryFromSlice for Vec<u8> {
     }
 }
 
-/// Error during conversion from a slice into an array.
+/// Error converting a slice into an array.
 #[derive(Debug, Fail)]
 #[fail(display = "failed to convert slice to array")]
 pub struct TryFromSliceError;
@@ -285,8 +285,8 @@ pub trait Hex<T> {
 /// # Why a separate container?
 ///
 /// We need a separate type (instead of just using `impl<T> Hex<T> for T`)
-/// both for code clarity and because for types implementing `Serialize` / `Deserialize`
-/// invocations within generated `serde` code would be ambiguous otherwise.
+/// both for code clarity and because otherwise invocations within generated `serde` code
+/// would be ambiguous for types implementing `Serialize` / `Deserialize`.
 #[derive(Debug)]
 pub struct HexForm<T>(PhantomData<T>);
 
