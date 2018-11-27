@@ -4,7 +4,8 @@
 [![License: Apache-2.0](https://img.shields.io/github/license/slowli/hex-buffer-serde.svg)](https://github.com/slowli/hex-buffer-serde/blob/master/LICENSE)
 ![rust 1.30.0+ required](https://img.shields.io/badge/rust-1.30.0+-blue.svg?label=Required%20Rust)
 
-**Documentation:** [![crate docs (master)](https://img.shields.io/badge/master-yellow.svg?label=docs)](https://slowli.github.io/hex-buffer-serde/hex_buffer_serde/)
+**Documentation:** [![Docs.rs](https://docs.rs/hex-buffer-serde/badge.svg)](https://docs.rs/hex-buffer-serde/) 
+[![crate docs (master)](https://img.shields.io/badge/master-yellow.svg?label=docs)](https://slowli.github.io/hex-buffer-serde/hex_buffer_serde/)
 
 `hex-buffer-serde` is a helper crate allowing to serialize types, which logically correspond to a byte buffer,
 in hex encoding within `serde`.
