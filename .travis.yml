@@ -36,3 +36,11 @@ script:
 - cargo test --doc
 - cargo run --example ed25519_dalek > /dev/null
 - cargo clean --doc && cargo doc --all-features --no-deps && cargo deadlinks --dir target/doc
+
+deploy:
+  provider: pages
+  local-dir: target/doc
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  on:
+    branch: master
