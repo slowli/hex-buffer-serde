@@ -141,6 +141,8 @@ extern crate serde_derive;
 #[cfg(test)]
 #[macro_use]
 extern crate serde_json;
+#[cfg(test)]
+extern crate serde_cbor;
 
 use serde::{de::Visitor, Deserializer, Serializer};
 use std::{borrow::Cow, fmt, marker::PhantomData};
@@ -254,6 +256,11 @@ pub trait Hex<T> {
 
             fn visit_str<E: DeError>(self, value: &str) -> Result<Self::Value, E> {
                 hex::decode(value).map_err(E::custom)
+            }
+
+            // See the `deserializing_flattened_field` test for an example why this is needed.
+            fn visit_bytes<E: DeError>(self, value: &[u8]) -> Result<Self::Value, E> {
+                Ok(value.to_vec())
             }
         }
 
@@ -461,5 +468,42 @@ mod tests {
 
         let value_copy: Test = bincode::deserialize(&buffer).unwrap();
         assert_eq!(value_copy, value);
+    }
+
+    #[test]
+    fn deserializing_flattened_field() {
+        // The fields in the flattened structure are somehow read with
+        // a human-readable `Deserializer`, even if the original `Deserializer`
+        // is not human-readable.
+        #[derive(Debug, PartialEq, Serialize, Deserialize)]
+        struct Inner {
+            #[serde(with = "HexForm")]
+            x: Vec<u8>,
+            #[serde(with = "HexForm")]
+            y: [u8; 16],
+        }
+
+        #[derive(Debug, PartialEq, Serialize, Deserialize)]
+        struct Outer {
+            #[serde(flatten)]
+            inner: Inner,
+            z: String,
+        }
+
+        let value = Outer {
+            inner: Inner {
+                x: vec![1; 8],
+                y: [0; 16],
+            },
+            z: "test".to_owned(),
+        };
+
+        let bytes = serde_cbor::to_vec(&value).unwrap();
+        let bytes_hex = hex::encode(&bytes);
+        // Check that byte buffers are stored in the binary form.
+        assert!(bytes_hex.contains(&"01".repeat(8)));
+        assert!(bytes_hex.contains(&"00".repeat(16)));
+        let value_copy = serde_cbor::from_slice(&bytes).unwrap();
+        assert_eq!(value, value_copy);
     }
 }
