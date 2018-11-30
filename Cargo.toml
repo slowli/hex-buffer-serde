@@ -1,6 +1,6 @@
 [package]
 name = "hex-buffer-serde"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Alex Ostrovski <ostrovski.alex@gmail.com>"]
 readme = "README.md"
 license = "Apache-2.0"

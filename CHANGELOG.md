@@ -5,9 +5,11 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## 0.1.1 - 2018-11-30
+
 ### Fixed
 
-- Fix bug with deserializing fields in flattened structs (d0f55210342867e77d299f6f592b17b8086fc234).
+- Fix bug with deserializing fields in flattened structs.
 
 ## 0.1.0 - 2018-11-27
 
