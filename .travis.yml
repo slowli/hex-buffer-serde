@@ -30,8 +30,8 @@ install:
 
 script:
 - cargo fmt -- --check
-- cargo check
-- cargo clippy -- -D warnings
+- cargo check --tests --examples
+- cargo clippy --tests --examples -- -D warnings
 - cargo test --tests
 - cargo test --doc
 - cargo run --example ed25519_dalek > /dev/null
