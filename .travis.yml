@@ -9,7 +9,7 @@ branches:
   - /-release$/
 
 rust:
-- 1.30.0
+- 1.34.0
 
 env:
   global:
@@ -23,9 +23,9 @@ dist: trusty
 
 install:
 - cargo deadlinks -V | grep $DEADLINKS_VERS || cargo install cargo-deadlinks --vers $DEADLINKS_VERS --force
-- rustup component add rustfmt-preview
+- rustup component add rustfmt
 - rustfmt -V
-- rustup component add clippy-preview
+- rustup component add clippy
 - cargo clippy -V
 
 script:
