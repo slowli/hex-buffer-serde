@@ -1,4 +1,4 @@
-// Copyright 2018 Alex Ostrovski
+// Copyright 2019 Alex Ostrovski
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,10 +54,8 @@
 //! }
 //!
 //! // We define in our crate:
-//! # extern crate serde;
-//! # #[macro_use] extern crate serde_derive;
-//! extern crate hex_buffer_serde;
 //! use hex_buffer_serde::Hex;
+//! use serde_derive::*;
 //!
 //! # use std::borrow::Cow;
 //! enum BufferHex {} // a single-purpose type for use in `#[serde(with)]`
@@ -85,24 +83,22 @@
 //!
 //! The crate could still be useful if you have control over the serialized buffer type.
 //! `Hex<T>` has a blanket implementation for types `T` satisfying certain constraints:
-//! `AsRef<[u8]>` and `TryFromSlice` (which is a makeshift replacement for `TryFrom<&[u8]>`
-//! until `TryFrom` is stabilized). If these constraints are satisfied, you can
+//! `AsRef<[u8]>` and `TryFrom<&[u8]>`. If these constraints are satisfied, you can
 //! use `HexForm::<T>` in `#[serde(with)]`:
 //!
 //! ```
-//! # extern crate serde;
-//! # #[macro_use] extern crate serde_derive;
-//! # extern crate hex_buffer_serde;
 //! // It is necessary for `Hex` to be in scope in order
 //! // for `serde`-generated code to use its `serialize` / `deserialize` methods.
-//! use hex_buffer_serde::{Hex, HexForm, TryFromSlice, TryFromSliceError};
+//! use hex_buffer_serde::{Hex, HexForm};
+//! # use serde_derive::*;
+//! use core::{array::TryFromSliceError, convert::TryFrom};
 //!
 //! pub struct OurBuffer([u8; 8]);
 //!
-//! impl TryFromSlice for OurBuffer {
+//! impl TryFrom<&[u8]> for OurBuffer {
 //!     type Error = TryFromSliceError;
 //!
-//!     fn try_from_slice(slice: &[u8]) -> Result<Self, Self::Error> {
+//!     fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
 //!         // snip
 //! #       unimplemented!()
 //!     }
@@ -126,82 +122,14 @@
 
 #![deny(missing_docs, missing_debug_implementations)]
 
-extern crate failure;
-#[macro_use]
-extern crate failure_derive;
-extern crate hex;
-extern crate serde;
-
-// Testing imports.
-#[cfg(test)]
-extern crate bincode;
-#[cfg(test)]
-#[macro_use]
-extern crate serde_derive;
-#[cfg(test)]
-#[macro_use]
-extern crate serde_json;
-#[cfg(test)]
-extern crate serde_cbor;
-
 use serde::{de::Visitor, Deserializer, Serializer};
-use std::{borrow::Cow, fmt, marker::PhantomData};
 
-/// Fallible conversion from a byte slice.
-///
-/// This trait is needed until `TryFrom` is stabilized.
-pub trait TryFromSlice: Sized {
-    /// Error that can occur during conversion.
-    type Error;
-
-    /// Tries to perform the conversion.
-    fn try_from_slice(slice: &[u8]) -> Result<Self, Self::Error>;
-}
-
-impl TryFromSlice for Vec<u8> {
-    type Error = &'static str; // should be `!`, but it's not stable yet
-
-    fn try_from_slice(slice: &[u8]) -> Result<Self, Self::Error> {
-        Ok(slice.to_vec())
-    }
-}
-
-/// Error converting a slice into an array.
-#[derive(Debug, Fail)]
-#[fail(display = "failed to convert slice to array")]
-pub struct TryFromSliceError;
-
-macro_rules! impl_for_array {
-    ($($n:expr,)+) => {
-        $(
-            impl TryFromSlice for [u8; $n] {
-                type Error = TryFromSliceError;
-
-                fn try_from_slice(slice: &[u8]) -> Result<Self, Self::Error> {
-                    if slice.len() != $n {
-                        Err(TryFromSliceError)
-                    } else {
-                        let mut bytes = [0; $n];
-                        bytes.copy_from_slice(slice);
-                        Ok(bytes)
-                    }
-                }
-            }
-        )+
-    }
-}
-
-impl_for_array!(
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-    26, 27, 28, 29, 30, 31, 32, 40, 48, 64, 80, 96, 128, 160, 192, 256,
-);
+use std::{borrow::Cow, convert::TryFrom, fmt, marker::PhantomData};
 
 /// Provides hex-encoded (de)serialization for `serde`.
 ///
 /// Note that the trait is automatically implemented for types that
-/// implement `AsRef<[u8]>` and [`TryFromSlice`].
-///
-/// [`TryFromSlice`]: trait.TryFromSlice.html
+/// implement `AsRef<[u8]>` and `TryFrom<&[u8]>`.
 pub trait Hex<T> {
     /// Converts the value into bytes. This is used for serialization.
     ///
@@ -299,21 +227,25 @@ pub struct HexForm<T>(PhantomData<T>);
 
 impl<T> Hex<T> for HexForm<T>
 where
-    T: AsRef<[u8]> + TryFromSlice,
-    <T as TryFromSlice>::Error: fmt::Display,
+    T: AsRef<[u8]> + for<'a> TryFrom<&'a [u8]>,
+    for<'a> <T as TryFrom<&'a [u8]>>::Error: ToString,
 {
     fn create_bytes(buffer: &T) -> Cow<[u8]> {
         Cow::Borrowed(buffer.as_ref())
     }
 
     fn from_bytes(bytes: &[u8]) -> Result<T, String> {
-        T::try_from_slice(bytes).map_err(|e| e.to_string())
+        T::try_from(bytes).map_err(|e| e.to_string())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use serde_derive::*;
+    use serde_json::json;
+
     use super::*;
+    use core::array::TryFromSliceError;
 
     #[test]
     fn internal_type() {
@@ -325,11 +257,13 @@ mod tests {
             }
         }
 
-        impl TryFromSlice for Buffer {
-            type Error = TryFromSliceError;
+        impl TryFrom<&[u8]> for Buffer {
+            type Error = String;
 
-            fn try_from_slice(slice: &[u8]) -> Result<Self, Self::Error> {
-                <[u8; 8]>::try_from_slice(slice).map(Buffer)
+            fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
+                <[u8; 8]>::try_from(slice)
+                    .map(Buffer)
+                    .map_err(|_| "!".to_owned())
             }
         }
 
@@ -342,14 +276,12 @@ mod tests {
 
         let json = json!({ "buffer": "0001020304050607", "other_field": "abc" });
         let value: Test = serde_json::from_value(json.clone()).unwrap();
-        assert!(
-            value
-                .buffer
-                .0
-                .iter()
-                .enumerate()
-                .all(|(i, &byte)| i == usize::from(byte))
-        );
+        assert!(value
+            .buffer
+            .0
+            .iter()
+            .enumerate()
+            .all(|(i, &byte)| i == usize::from(byte)));
 
         let json_copy = serde_json::to_value(&value).unwrap();
         assert_eq!(json, json_copy);
@@ -366,11 +298,11 @@ mod tests {
             }
         }
 
-        impl TryFromSlice for Buffer {
+        impl TryFrom<&[u8]> for Buffer {
             type Error = TryFromSliceError;
 
-            fn try_from_slice(slice: &[u8]) -> Result<Self, Self::Error> {
-                <[u8; 8]>::try_from_slice(slice).map(Buffer)
+            fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
+                <[u8; 8]>::try_from(slice).map(Buffer)
             }
         }
 
@@ -445,14 +377,12 @@ mod tests {
 
         let json = json!({ "buffer": "0001020304050607", "other_field": "abc" });
         let value: Test = serde_json::from_value(json.clone()).unwrap();
-        assert!(
-            value
-                .buffer
-                .0
-                .iter()
-                .enumerate()
-                .all(|(i, &byte)| i == usize::from(byte))
-        );
+        assert!(value
+            .buffer
+            .0
+            .iter()
+            .enumerate()
+            .all(|(i, &byte)| i == usize::from(byte)));
 
         let json_copy = serde_json::to_value(&value).unwrap();
         assert_eq!(json, json_copy);
