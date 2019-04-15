@@ -15,18 +15,9 @@
 //! Example demonstrating how to use the crate with external types which don't implement
 //! any "useful" traits (e.g., `AsRef<[u8]>` or `FromHex`).
 
-extern crate ed25519_dalek as ed25519;
-extern crate hex;
-extern crate rand;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate bincode;
-extern crate hex_buffer_serde;
-extern crate serde_json;
-
-use ed25519::{ExpandedSecretKey, PublicKey, SecretKey};
+use ed25519::{PublicKey, SecretKey};
 use rand::thread_rng;
+use serde_derive::*;
 
 use std::borrow::Cow;
 
@@ -55,8 +46,7 @@ struct SomeData {
 
 fn main() {
     let secret_key = SecretKey::generate(&mut thread_rng());
-    let secret_key: ExpandedSecretKey = (&secret_key).into();
-    let public_key: PublicKey = secret_key.into();
+    let public_key: PublicKey = (&secret_key).into();
 
     println!("Key hex: {}", hex::encode(public_key.as_bytes()));
 
