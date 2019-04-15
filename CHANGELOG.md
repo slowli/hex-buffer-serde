@@ -5,6 +5,11 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Changed
+
+- Use 2018 Rust edition.
+- Use `TryFrom` trait, which was stabilized in Rust v1.34.
+
 ## 0.1.1 - 2018-11-30
 
 ### Fixed
