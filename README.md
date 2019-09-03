@@ -2,7 +2,7 @@
 
 [![Travis Build Status](https://img.shields.io/travis/com/slowli/hex-buffer-serde/master.svg?label=Linux%20Build)](https://travis-ci.com/slowli/hex-buffer-serde) 
 [![License: Apache-2.0](https://img.shields.io/github/license/slowli/hex-buffer-serde.svg)](https://github.com/slowli/hex-buffer-serde/blob/master/LICENSE)
-![rust 1.34.0+ required](https://img.shields.io/badge/rust-1.34.0+-blue.svg?label=Required%20Rust)
+![rust 1.36.0+ required](https://img.shields.io/badge/rust-1.36.0+-blue.svg?label=Required%20Rust)
 
 **Documentation:** [![Docs.rs](https://docs.rs/hex-buffer-serde/badge.svg)](https://docs.rs/hex-buffer-serde/) 
 [![crate docs (master)](https://img.shields.io/badge/master-yellow.svg?label=docs)](https://slowli.github.io/hex-buffer-serde/hex_buffer_serde/)
