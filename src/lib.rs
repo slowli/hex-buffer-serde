@@ -120,11 +120,15 @@
 //! # fn main() {}
 //! ```
 
+#![no_std]
 #![deny(missing_docs, missing_debug_implementations)]
+
+extern crate alloc;
 
 use serde::{de::Visitor, Deserializer, Serializer};
 
-use std::{borrow::Cow, convert::TryFrom, fmt, marker::PhantomData};
+use alloc::{borrow::Cow, string::{String, ToString}, vec::Vec};
+use core::{convert::TryFrom, fmt, marker::PhantomData};
 
 /// Provides hex-encoded (de)serialization for `serde`.
 ///
@@ -245,6 +249,7 @@ mod tests {
     use serde_json::json;
 
     use super::*;
+    use alloc::{borrow::ToOwned, vec};
     use core::array::TryFromSliceError;
 
     #[test]
