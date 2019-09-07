@@ -14,7 +14,7 @@ rust:
 env:
   global:
   - CARGO_INCREMENTAL=1
-  - DEADLINKS_VERS=0.3.0
+  - DEADLINKS_VERS=0.4.1
 
 cache:
   - cargo
