@@ -127,7 +127,11 @@ extern crate alloc;
 
 use serde::{de::Visitor, Deserializer, Serializer};
 
-use alloc::{borrow::Cow, string::{String, ToString}, vec::Vec};
+use alloc::{
+    borrow::Cow,
+    string::{String, ToString},
+    vec::Vec,
+};
 use core::{convert::TryFrom, fmt, marker::PhantomData};
 
 /// Provides hex-encoded (de)serialization for `serde`.
