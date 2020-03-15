@@ -1,4 +1,4 @@
-// Copyright 2019 Alex Ostrovski
+// Copyright 2020 Alex Ostrovski
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,13 @@
 //!
 //! [`sodiumoxide`]: https://crates.io/crates/sodiumoxide
 //! [`Hex`]: trait.Hex.html
+//!
+//! # Crate Features
+//!
+//! - `std` (enabled by default): Enables types from the Rust standard library. Switching
+//!   this feature off can be used for constrained environments, such as WASM. Note that
+//!   the crate still requires an allocator (that is, the `alloc` crate) even
+//!   if the `std` feature is disabled.
 //!
 //! # Examples
 //!

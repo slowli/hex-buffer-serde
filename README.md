@@ -14,6 +14,13 @@ in hex encoding within `serde`.
 
 See crate docs for the examples of usage.
 
+### Crate Features
+
+- `std` (enabled by default): Enables types from the Rust standard library. Switching
+  this feature off can be used for constrained environments, such as WASM. Note that
+  the crate still requires an allocator (that is, the `alloc` crate) even
+  if the `std` feature is disabled.
+
 ## Alternatives
 
 [`hex-serde`] provides similar functionality and is a viable alternative if you have the control over the type
