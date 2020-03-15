@@ -25,7 +25,10 @@ use ed25519::{PublicKey, SecretKey};
 use rand::thread_rng;
 use serde_derive::*;
 
-use alloc::{borrow::{Cow, ToOwned}, string::{String, ToString}};
+use alloc::{
+    borrow::{Cow, ToOwned},
+    string::{String, ToString},
+};
 
 use hex_buffer_serde::Hex;
 
@@ -65,7 +68,9 @@ fn main() {
     assert!(json.contains(&key_hex));
 
     let bin = bincode::serialize(&data).unwrap();
-    assert!(bin.windows(key_hex.len()).all(|window| window != key_hex.as_bytes()));
+    assert!(bin
+        .windows(key_hex.len())
+        .all(|window| window != key_hex.as_bytes()));
     let bin = hex::encode(&bin);
     assert!(bin.contains(&key_hex));
 }
