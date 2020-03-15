@@ -14,12 +14,18 @@
 
 //! Example demonstrating how to use the crate with external types which don't implement
 //! any "useful" traits (e.g., `AsRef<[u8]>` or `FromHex`).
+//!
+//! Also, checks that the crate is usable with `no_std`.
+
+#![no_std]
+
+extern crate alloc;
 
 use ed25519::{PublicKey, SecretKey};
 use rand::thread_rng;
 use serde_derive::*;
 
-use std::borrow::Cow;
+use alloc::{borrow::{Cow, ToOwned}, string::{String, ToString}};
 
 use hex_buffer_serde::Hex;
 
@@ -48,7 +54,7 @@ fn main() {
     let secret_key = SecretKey::generate(&mut thread_rng());
     let public_key: PublicKey = (&secret_key).into();
 
-    println!("Key hex: {}", hex::encode(public_key.as_bytes()));
+    let key_hex = hex::encode(public_key.as_bytes());
 
     let data = SomeData {
         public_key,
@@ -56,8 +62,10 @@ fn main() {
     };
 
     let json = serde_json::to_string_pretty(&data).unwrap();
-    println!("JSON: {}", json);
+    assert!(json.contains(&key_hex));
 
     let bin = bincode::serialize(&data).unwrap();
-    println!("bincode: {}", hex::encode(&bin));
+    assert!(bin.windows(key_hex.len()).all(|window| window != key_hex.as_bytes()));
+    let bin = hex::encode(&bin);
+    assert!(bin.contains(&key_hex));
 }
