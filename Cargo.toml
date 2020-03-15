@@ -11,11 +11,11 @@ description = "Helper for serializing byte buffers as hex strings in `serde`"
 repository = "https://github.com/slowli/hex-buffer-serde"
 documentation = "https://docs.rs/hex-buffer-serde/"
 
-[badges]
-travis-ci = { repository = "slowli/hex-buffer-serde" }
-
 [dependencies]
+# Public dependencies (present in the public API).
 serde = { version = "1.0", default-features = false }
+
+# Private dependencies (not exposed in the public API).
 hex = { version = "0.4", default-features = false }
 
 [dev-dependencies]
