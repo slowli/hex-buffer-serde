@@ -5,6 +5,10 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Mark the crate as not needing the standard library.
+
 ## 0.2.0 - 2019-04-15
 
 ### Changed
