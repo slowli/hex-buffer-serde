@@ -21,6 +21,18 @@ See crate docs for the examples of usage.
   the crate still requires an allocator (that is, the `alloc` crate) even
   if the `std` feature is disabled.
 
+## Supported Rust Versions
+
+The `hex-buffer-serde` crate is built against recent stable Rust versions.
+The minimum of these versions is indicated in the badge at the top of this file.
+Newer stable versions are supported as a result.
+Recent beta and nightly versions *should* be supported as well,
+but no specific effort is allocated into supporting them.
+
+A bump of the minimum supported Rust version **will not** be considered
+a semantically breaking change. It is, however, guaranteed that the crate
+will build on some stable Rust toolchain.
+
 ## Alternatives
 
 [`hex-serde`] provides similar functionality and is a viable alternative if you have the control over the type
