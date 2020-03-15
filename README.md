@@ -1,6 +1,6 @@
 # Hex encoding helper for serde
 
-[![Travis Build Status](https://img.shields.io/travis/com/slowli/hex-buffer-serde/master.svg?label=Linux%20Build)](https://travis-ci.com/slowli/hex-buffer-serde) 
+[![Build Status](https://github.com/slowli/hex-buffer-serde/workflows/Rust/badge.svg?branch=master)](https://github.com/slowli/hex-buffer-serde/actions) 
 [![License: Apache-2.0](https://img.shields.io/github/license/slowli/hex-buffer-serde.svg)](https://github.com/slowli/hex-buffer-serde/blob/master/LICENSE)
 ![rust 1.39.0+ required](https://img.shields.io/badge/rust-1.39.0+-blue.svg?label=Required%20Rust)
 
