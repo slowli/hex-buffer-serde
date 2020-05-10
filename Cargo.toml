@@ -29,3 +29,6 @@ ed25519 = { version = "=1.0.0-pre.3", package = "ed25519-dalek", features = ["se
 [features]
 default = ["std"]
 std = ["serde/std", "hex/std"]
+
+[workspace]
+members = [".", "wasm"]

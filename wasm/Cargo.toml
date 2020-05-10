@@ -1,0 +1,18 @@
+[package]
+name = "hex-buffer-serde-wasm"
+version = "0.0.0"
+publish = false
+authors = ["Alex Ostrovski <ostrovski.alex@gmail.com>"]
+edition = "2018"
+license = "Apache-2.0"
+description = "Testing usability of hex-buffer-serde in WASM"
+repository = "https://github.com/slowli/hex-buffer-serde"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+hex-buffer-serde = { path = "..", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+# WASM glue
+wasm-bindgen = { version = "0.2.50", features = ["serde-serialize"] }
