@@ -14,3 +14,13 @@ assert.deepEqual(reversedValue, {
   array_buffer: 'efbeadde',
   other_data: 'data',
 });
+
+const invalidValue = {
+  buffer: 'c0ffee',
+  array_buffer: 'beef', // << invalid buffer length
+  other_data: 'data',
+};
+assert.throws(() => reverse(invalidValue), {
+  name: 'Error',
+  message: /could not convert slice to array/i,
+});
