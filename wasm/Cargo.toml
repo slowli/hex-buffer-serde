@@ -5,8 +5,8 @@ publish = false
 authors = ["Alex Ostrovski <ostrovski.alex@gmail.com>"]
 edition = "2018"
 license = "Apache-2.0"
-description = "Testing usability of pwbox in WASM"
-repository = "https://github.com/exonum/pwbox-rs"
+description = "Testing usability of hex-buffer-serde in WASM"
+repository = "https://github.com/slowli/hex-buffer-serde"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
