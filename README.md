@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/slowli/hex-buffer-serde/workflows/Rust/badge.svg?branch=master)](https://github.com/slowli/hex-buffer-serde/actions) 
 [![License: Apache-2.0](https://img.shields.io/github/license/slowli/hex-buffer-serde.svg)](https://github.com/slowli/hex-buffer-serde/blob/master/LICENSE)
-![rust 1.39.0+ required](https://img.shields.io/badge/rust-1.39.0+-blue.svg?label=Required%20Rust)
+![rust 1.41.0+ required](https://img.shields.io/badge/rust-1.41.0+-blue.svg?label=Required%20Rust)
 
 **Documentation:** [![Docs.rs](https://docs.rs/hex-buffer-serde/badge.svg)](https://docs.rs/hex-buffer-serde/) 
 [![crate docs (master)](https://img.shields.io/badge/master-yellow.svg?label=docs)](https://slowli.github.io/hex-buffer-serde/hex_buffer_serde/)
@@ -11,6 +11,13 @@
 in hex encoding within `serde`.
 
 ## Usage
+
+Add this to your `Crate.toml`:
+
+```toml
+[dependencies]
+hex-buffer-serde = "0.2.1"
+```
 
 See crate docs for the examples of usage.
 

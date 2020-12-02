@@ -32,7 +32,8 @@ use alloc::{
 
 use hex_buffer_serde::Hex;
 
-enum PublicKeyHex {}
+struct PublicKeyHex(());
+
 impl Hex<PublicKey> for PublicKeyHex {
     fn create_bytes(value: &PublicKey) -> Cow<[u8]> {
         Cow::Borrowed(&*value.as_bytes())
