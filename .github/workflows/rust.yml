@@ -8,7 +8,7 @@ on:
 
 env:
   # Minimum supported Rust version.
-  msrv: 1.39.0
+  msrv: 1.41.0
   # Nightly Rust toolchain for no-std build.
   nightly: nightly-2020-10-24
 
@@ -112,6 +112,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Cache cargo build
         uses: actions/cache@v1
         with:
