@@ -128,7 +128,9 @@
 
 #![no_std]
 #![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.2.1")]
-#![deny(missing_docs, missing_debug_implementations)]
+#![warn(missing_docs, missing_debug_implementations)]
+#![warn(clippy::all, clippy::pedantic)]
+#![allow(clippy::missing_errors_doc, clippy::must_use_candidate)]
 
 extern crate alloc;
 
@@ -256,7 +258,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use serde_derive::*;
+    use serde_derive::{Deserialize, Serialize};
     use serde_json::json;
 
     use super::*;
@@ -367,7 +369,8 @@ mod tests {
         #[derive(Debug, PartialEq, Eq)]
         pub struct Buffer([u8; 8]);
 
-        enum BufferHex {}
+        struct BufferHex(());
+
         impl Hex<Buffer> for BufferHex {
             fn create_bytes(buffer: &Buffer) -> Cow<[u8]> {
                 Cow::Borrowed(&buffer.0)
