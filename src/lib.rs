@@ -257,6 +257,7 @@ where
 }
 
 #[cfg(test)]
+#[allow(clippy::unknown_clippy_lints)] // `map_err_ignore` lint is newer than MSRV
 mod tests {
     use serde_derive::{Deserialize, Serialize};
     use serde_json::json;
@@ -278,6 +279,7 @@ mod tests {
         impl TryFrom<&[u8]> for Buffer {
             type Error = String;
 
+            #[allow(clippy::map_err_ignore)]
             fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
                 <[u8; 8]>::try_from(slice)
                     .map(Buffer)
