@@ -127,6 +127,7 @@
 //! ```
 
 #![no_std]
+#![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.2.1")]
 #![deny(missing_docs, missing_debug_implementations)]
 
 extern crate alloc;
