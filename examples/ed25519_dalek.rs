@@ -35,7 +35,7 @@ use hex_buffer_serde::Hex;
 struct PublicKeyHex(());
 
 impl Hex<PublicKey> for PublicKeyHex {
-    fn create_bytes(value: &PublicKey) -> Cow<[u8]> {
+    fn create_bytes(value: &PublicKey) -> Cow<'_, [u8]> {
         Cow::Borrowed(&*value.as_bytes())
     }
 
