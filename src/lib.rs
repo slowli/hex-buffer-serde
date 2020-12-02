@@ -32,7 +32,6 @@
 //! for (de)serialization with the help of the `#[serde(with)]` attribute.
 //!
 //! [`sodiumoxide`]: https://crates.io/crates/sodiumoxide
-//! [`Hex`]: trait.Hex.html
 //!
 //! # Crate Features
 //!
@@ -163,9 +162,9 @@ pub trait Hex<T> {
     ///
     /// The serialization is a lower-case hex string
     /// for [human-readable][hr] serializers (e.g., JSON or TOML), and the original bytes
-    /// returned by [`create_bytes`] for non-human-readable ones.
+    /// returned by [`Self::create_bytes()`] for non-human-readable ones.
     ///
-    /// [hr]: https://docs.rs/serde/^1.0/serde/trait.Serializer.html#method.is_human_readable
+    /// [hr]: serde::Serializer::is_human_readable()
     /// [`create_bytes`]: #tymethod.create_bytes
     fn serialize<S: Serializer>(value: &T, serializer: S) -> Result<S::Ok, S::Error> {
         let value = Self::create_bytes(value);
@@ -181,7 +180,7 @@ pub trait Hex<T> {
     /// If the deserializer is [human-readable][hr] (e.g., JSON or TOML), this method
     /// expects a hex-encoded string. Otherwise, the method expects a byte array.
     ///
-    /// [hr]: https://docs.rs/serde/^1.0/serde/trait.Deserializer.html#method.is_human_readable
+    /// [hr]: serde::Serializer::is_human_readable()
     fn deserialize<'de, D>(deserializer: D) -> Result<T, D::Error>
     where
         D: Deserializer<'de>,
