@@ -127,7 +127,7 @@
 //! ```
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.2.1")]
+#![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.2.2")]
 #![warn(missing_docs, missing_debug_implementations)]
 #![warn(clippy::all, clippy::pedantic)]
 #![allow(clippy::missing_errors_doc, clippy::must_use_candidate)]

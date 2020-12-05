@@ -16,7 +16,7 @@ Add this to your `Crate.toml`:
 
 ```toml
 [dependencies]
-hex-buffer-serde = "0.2.1"
+hex-buffer-serde = "0.2.2"
 ```
 
 See crate docs for the examples of usage.
