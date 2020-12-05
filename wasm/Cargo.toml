@@ -15,4 +15,4 @@ crate-type = ["cdylib", "rlib"]
 hex-buffer-serde = { path = "..", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 # WASM glue
-wasm-bindgen = { version = "0.2.50", features = ["serde-serialize"] }
+wasm-bindgen = { version = "0.2.69", features = ["serde-serialize"] }
