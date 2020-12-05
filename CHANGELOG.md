@@ -5,6 +5,12 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## 0.2.2 - 2020-12-05
+
+### Internal improvements
+
+- Use 2018 edition idioms and improve code style in general.
+
 ## 0.2.1 - 2020-03-15
 
 ### Added

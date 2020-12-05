@@ -127,7 +127,7 @@
 //! ```
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.2.1")]
+#![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.2.2")]
 #![warn(missing_docs, missing_debug_implementations)]
 #![warn(clippy::all, clippy::pedantic)]
 #![allow(clippy::missing_errors_doc, clippy::must_use_candidate)]
@@ -151,7 +151,7 @@ pub trait Hex<T> {
     /// Converts the value into bytes. This is used for serialization.
     ///
     /// The returned buffer can be either borrowed from the type, or created by the method.
-    fn create_bytes(value: &T) -> Cow<[u8]>;
+    fn create_bytes(value: &T) -> Cow<'_, [u8]>;
 
     /// Creates a value from the byte slice.
     ///
@@ -195,8 +195,8 @@ pub trait Hex<T> {
         impl<'de> Visitor<'de> for HexVisitor {
             type Value = Vec<u8>;
 
-            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.write_str("hex-encoded byte array")
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("hex-encoded byte array")
             }
 
             fn visit_str<E: DeError>(self, value: &str) -> Result<Self::Value, E> {
@@ -214,8 +214,8 @@ pub trait Hex<T> {
         impl<'de> Visitor<'de> for BytesVisitor {
             type Value = Vec<u8>;
 
-            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.write_str("byte array")
+            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                formatter.write_str("byte array")
             }
 
             fn visit_bytes<E: DeError>(self, value: &[u8]) -> Result<Self::Value, E> {
@@ -247,7 +247,7 @@ where
     T: AsRef<[u8]> + for<'a> TryFrom<&'a [u8]>,
     for<'a> <T as TryFrom<&'a [u8]>>::Error: ToString,
 {
-    fn create_bytes(buffer: &T) -> Cow<[u8]> {
+    fn create_bytes(buffer: &T) -> Cow<'_, [u8]> {
         Cow::Borrowed(buffer.as_ref())
     }
 
@@ -374,7 +374,7 @@ mod tests {
         struct BufferHex(());
 
         impl Hex<Buffer> for BufferHex {
-            fn create_bytes(buffer: &Buffer) -> Cow<[u8]> {
+            fn create_bytes(buffer: &Buffer) -> Cow<'_, [u8]> {
                 Cow::Borrowed(&buffer.0)
             }
 
