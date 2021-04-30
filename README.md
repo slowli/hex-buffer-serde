@@ -7,8 +7,8 @@
 **Documentation:** [![Docs.rs](https://docs.rs/hex-buffer-serde/badge.svg)](https://docs.rs/hex-buffer-serde/) 
 [![crate docs (master)](https://img.shields.io/badge/master-yellow.svg?label=docs)](https://slowli.github.io/hex-buffer-serde/hex_buffer_serde/)
 
-`hex-buffer-serde` is a helper crate allowing to serialize types, which logically correspond to a byte buffer,
-in hex encoding within `serde`.
+`hex-buffer-serde` is a helper crate allowing to serialize types, which logically correspond
+to a byte buffer, in hex encoding within `serde`.
 
 ## Usage
 
@@ -19,7 +19,24 @@ Add this to your `Crate.toml`:
 hex-buffer-serde = "0.2.2"
 ```
 
-See crate docs for the examples of usage.
+Basic usage:
+
+```rust
+use hex_buffer_serde::{Hex as _, HexForm};
+use serde_derive::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+pub struct Example {
+    // will be serialized as hex string in human-readable formats
+    // (e.g., JSON or TOML), and as a byte array in binary formats
+    // (e.g., bincode).
+    #[serde(with = "HexForm")]
+    buffer: [u8; 32],
+    // other fields...
+}
+```
+
+See crate docs for more examples of usage.
 
 ### Crate Features
 
