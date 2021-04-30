@@ -73,7 +73,7 @@
 //! # fn main() {}
 //! ```
 //!
-//! # Use with internal types
+//! ## Use with internal types
 //!
 //! The crate could still be useful if you have control over the serialized buffer type.
 //! `Hex<T>` has a blanket implementation for types `T` satisfying certain constraints:
@@ -127,10 +127,17 @@ use serde::{de::Visitor, Deserializer, Serializer};
 use alloc::{borrow::Cow, vec::Vec};
 use core::{convert::TryFrom, fmt, marker::PhantomData};
 
+mod const_len;
+pub use self::const_len::{FixedHex, FixedHexForm};
+
 /// Provides hex-encoded (de)serialization for `serde`.
 ///
 /// Note that the trait is automatically implemented for types that
 /// implement [`AsRef`]`<[u8]>` and [`TryFrom`]`<&[u8]>`.
+///
+/// # Examples
+///
+/// See [the crate-level docs](index.html#examples) for the examples of usage.
 pub trait Hex<T> {
     /// Error returned on unsuccessful deserialization
     type Error: fmt::Display;
@@ -219,7 +226,8 @@ pub trait Hex<T> {
     }
 }
 
-/// A dummy container for use inside `#[serde(with)]` attribute.
+/// A dummy container for use inside `#[serde(with)]` attribute if the underlying type
+/// implements [`Hex`].
 ///
 /// # Why a separate container?
 ///
