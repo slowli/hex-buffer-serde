@@ -17,7 +17,7 @@
 //! designated specifically for this purpose. The implementor can then be used
 //! for (de)serialization with the help of the `#[serde(with)]` attribute.
 //!
-//! [`FixedHex`] is an analogue of [`Hex`] that can be used if the serialized buffer has
+//! [`ConstHex`] is an analogue of [`Hex`] that can be used if the serialized buffer has
 //! constant length known in compile time.
 //!
 //! # Crate Features
@@ -25,7 +25,7 @@
 //! - `alloc` (enabled by default). Enables types that depend on the `alloc` crate:
 //!   [`Hex`] and [`HexForm`].
 //! - `const_len` (disabled by default). Enables types that depend on const generics:
-//!   [`FixedHex`] and [`FixedHexForm`]. Requires Rust 1.51 or newer.
+//!   [`ConstHex`] and [`ConstHexForm`]. Requires Rust 1.51 or newer.
 //!
 //! [`sodiumoxide`]: https://crates.io/crates/sodiumoxide
 //!
@@ -132,7 +132,7 @@ extern crate alloc;
 #[cfg(feature = "const_len")]
 mod const_len;
 #[cfg(feature = "const_len")]
-pub use self::const_len::{FixedHex, FixedHexForm};
+pub use self::const_len::{ConstHex, ConstHexForm};
 #[cfg(feature = "alloc")]
 mod var_len;
 #[cfg(feature = "alloc")]

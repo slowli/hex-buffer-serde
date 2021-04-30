@@ -14,28 +14,28 @@ use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData}
 /// # Examples
 ///
 /// ```
-/// use hex_buffer_serde::{FixedHex, FixedHexForm};
+/// use hex_buffer_serde::{ConstHex, ConstHexForm};
 /// # use serde_derive::{Deserialize, Serialize};
 ///
 /// #[derive(Serialize, Deserialize)]
 /// struct Simple {
-///     #[serde(with = "FixedHexForm")]
+///     #[serde(with = "ConstHexForm")]
 ///     array: [u8; 16],
 ///     // `array` will be serialized as 32-char hex string
 /// }
 /// ```
 ///
-/// Similarly to `Hex`, it is possible to define proxies implementing `FixedHex` for external
+/// Similarly to `Hex`, it is possible to define proxies implementing `ConstHex` for external
 /// types, for example, keys from [`ed25519-dalek`](https://crates.io/crates/ed25519-dalek):
 ///
 /// ```
 /// use ed25519::{PublicKey, SecretKey};
-/// use hex_buffer_serde::FixedHex;
+/// use hex_buffer_serde::ConstHex;
 /// # use serde_derive::{Deserialize, Serialize};
 ///
 /// struct KeyHex(());
 ///
-/// impl FixedHex<PublicKey, 32> for KeyHex {
+/// impl ConstHex<PublicKey, 32> for KeyHex {
 ///     type Error = ed25519::SignatureError;
 ///
 ///     fn create_bytes(pk: &PublicKey) -> [u8; 32] {
@@ -49,7 +49,7 @@ use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData}
 ///     }
 /// }
 ///
-/// impl FixedHex<SecretKey, 32> for KeyHex {
+/// impl ConstHex<SecretKey, 32> for KeyHex {
 ///     type Error = core::convert::Infallible;
 ///
 ///     fn create_bytes(sk: &SecretKey) -> [u8; 32] {
@@ -72,7 +72,7 @@ use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData}
 /// }
 /// ```
 #[cfg_attr(docsrs, doc(cfg(feature = "const_len")))]
-pub trait FixedHex<T, const N: usize> {
+pub trait ConstHex<T, const N: usize> {
     /// Error returned on unsuccessful deserialization.
     type Error: fmt::Display;
 
@@ -190,12 +190,12 @@ pub trait FixedHex<T, const N: usize> {
 }
 
 /// A dummy container for use inside `#[serde(with)]` attribute if the underlying type
-/// implements [`FixedHex`].
+/// implements [`ConstHex`].
 #[cfg_attr(docsrs, doc(cfg(feature = "const_len")))]
 #[derive(Debug)]
-pub struct FixedHexForm<T>(PhantomData<T>);
+pub struct ConstHexForm<T>(PhantomData<T>);
 
-impl<const N: usize> FixedHex<[u8; N], N> for FixedHexForm<[u8; N]> {
+impl<const N: usize> ConstHex<[u8; N], N> for ConstHexForm<[u8; N]> {
     type Error = TryFromSliceError;
 
     fn create_bytes(buffer: &[u8; N]) -> [u8; N] {
@@ -216,9 +216,9 @@ mod tests {
 
     #[derive(Debug, PartialEq, Serialize, Deserialize)]
     struct Arrays {
-        #[serde(with = "FixedHexForm")]
+        #[serde(with = "ConstHexForm")]
         array: [u8; 16],
-        #[serde(with = "FixedHexForm")]
+        #[serde(with = "ConstHexForm")]
         longer_array: [u8; 32],
     }
 
@@ -252,7 +252,7 @@ mod tests {
     #[test]
     fn deserializing_array_with_incorrect_length_from_binary_format() {
         #[derive(Debug, Serialize, Deserialize)]
-        struct ArrayHolder<const N: usize>(#[serde(with = "FixedHexForm")] [u8; N]);
+        struct ArrayHolder<const N: usize>(#[serde(with = "ConstHexForm")] [u8; N]);
 
         let buffer = bincode::serialize(&ArrayHolder([5; 6])).unwrap();
         let err = bincode::deserialize::<ArrayHolder<4>>(&buffer).unwrap_err();
@@ -268,7 +268,7 @@ mod tests {
         use ed25519::PublicKey;
 
         struct PublicKeyHex(());
-        impl FixedHex<PublicKey, 32> for PublicKeyHex {
+        impl ConstHex<PublicKey, 32> for PublicKeyHex {
             type Error = ed25519::SignatureError;
 
             fn create_bytes(pk: &PublicKey) -> [u8; 32] {

@@ -31,7 +31,7 @@ version-sync = "0.9.1"
 default = ["alloc"]
 # Enables types that depend on the `alloc` crate: `Hex` and `HexForm`.
 alloc = ["hex/alloc"]
-# Enables types that depend on const generics: `FixedHex` and `FixedHexForm`.
+# Enables types that depend on const generics: `ConstHex` and `ConstHexForm`.
 # Requires Rust 1.51 or newer.
 const_len = []
 
