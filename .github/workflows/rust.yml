@@ -50,7 +50,7 @@ jobs:
         uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all --all-targets -- -D warnings
+          args: --all --all-targets --all-features -- -D warnings
 
       - name: Run tests
         uses: actions-rs/cargo@v1
@@ -60,7 +60,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: run
-          args: --example ed25519_dalek --no-default-features
+          args: --example ed25519_dalek --all-features
 
       - name: Compile WASM
         run: (cd wasm; wasm-pack build --target nodejs)
@@ -94,7 +94,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: run
-          args: --example ed25519_dalek --no-default-features
+          args: --example ed25519_dalek
 
   build-nostd:
     runs-on: ubuntu-latest
@@ -120,7 +120,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --lib --no-default-features --target thumbv7m-none-eabi -Z avoid-dev-deps
+          args: --lib --no-default-features --features const_len --target thumbv7m-none-eabi -Z avoid-dev-deps
 
   document:
     needs:
@@ -149,7 +149,7 @@ jobs:
           profile: minimal
 
       - name: Build docs
-        run: cargo doc --all-features --no-deps
+        run: cargo rustdoc --all-features -- --cfg docsrs
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v3
