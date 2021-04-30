@@ -8,7 +8,6 @@
 extern crate alloc;
 
 use ed25519::{PublicKey, SecretKey};
-use rand::thread_rng;
 use serde_derive::*;
 
 use alloc::{
@@ -43,7 +42,9 @@ struct SomeData {
 }
 
 fn main() {
-    let secret_key = SecretKey::generate(&mut thread_rng());
+    let secret_key =
+        hex::decode("9e55d1e1aa1f455b8baad9fdf975503655f8b359d542fa7e4ce84106d625b352").unwrap();
+    let secret_key = SecretKey::from_bytes(&secret_key).unwrap();
     let public_key: PublicKey = (&secret_key).into();
 
     let key_hex = hex::encode(public_key.as_bytes());
