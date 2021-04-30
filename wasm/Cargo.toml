@@ -12,7 +12,7 @@ repository = "https://github.com/slowli/hex-buffer-serde"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-hex-buffer-serde = { path = "..", default-features = false }
+hex-buffer-serde = { path = ".." }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 # WASM glue
 wasm-bindgen = { version = "0.2.69", features = ["serde-serialize"] }

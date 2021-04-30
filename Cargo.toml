@@ -27,6 +27,11 @@ doc-comment = "0.3.3"
 ed25519 = { version = "1.0.1", package = "ed25519-dalek", features = ["serde"] }
 version-sync = "0.9.1"
 
+[[example]]
+name = "ed25519_dalek"
+path = "examples/ed25519_dalek.rs"
+required-features = ["alloc"]
+
 [features]
 default = ["alloc"]
 # Enables types that depend on the `alloc` crate: `Hex` and `HexForm`.
