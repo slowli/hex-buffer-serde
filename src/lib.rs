@@ -47,17 +47,19 @@
 //!
 //! // We define in our crate:
 //! use hex_buffer_serde::Hex;
-//! use serde_derive::*;
+//! use serde_derive::{Deserialize, Serialize};
 //!
 //! # use std::borrow::Cow;
-//! enum BufferHex {} // a single-purpose type for use in `#[serde(with)]`
+//! struct BufferHex; // a single-purpose type for use in `#[serde(with)]`
 //! impl Hex<Buffer> for BufferHex {
+//!     type Error = &'static str;
+//!
 //!     fn create_bytes(buffer: &Buffer) -> Cow<[u8]> {
 //!         buffer.as_ref().into()
 //!     }
 //!
-//!     fn from_bytes(bytes: &[u8]) -> Result<Buffer, String> {
-//!         Buffer::from_slice(bytes).ok_or_else(|| "invalid byte length".to_owned())
+//!     fn from_bytes(bytes: &[u8]) -> Result<Buffer, Self::Error> {
+//!         Buffer::from_slice(bytes).ok_or_else(|| "invalid byte length")
 //!     }
 //! }
 //!
@@ -122,18 +124,17 @@ extern crate alloc;
 
 use serde::{de::Visitor, Deserializer, Serializer};
 
-use alloc::{
-    borrow::Cow,
-    string::{String, ToString},
-    vec::Vec,
-};
+use alloc::{borrow::Cow, vec::Vec};
 use core::{convert::TryFrom, fmt, marker::PhantomData};
 
 /// Provides hex-encoded (de)serialization for `serde`.
 ///
 /// Note that the trait is automatically implemented for types that
-/// implement `AsRef<[u8]>` and `TryFrom<&[u8]>`.
+/// implement [`AsRef`]`<[u8]>` and [`TryFrom`]`<&[u8]>`.
 pub trait Hex<T> {
+    /// Error returned on unsuccessful deserialization
+    type Error: fmt::Display;
+
     /// Converts the value into bytes. This is used for serialization.
     ///
     /// The returned buffer can be either borrowed from the type, or created by the method.
@@ -145,7 +146,7 @@ pub trait Hex<T> {
     ///
     /// If this method fails, it should return a human-readable error description conforming
     /// to `serde` conventions (no upper-casing of the first letter, no punctuation at the end).
-    fn from_bytes(bytes: &[u8]) -> Result<T, String>;
+    fn from_bytes(bytes: &[u8]) -> Result<T, Self::Error>;
 
     /// Serializes the value for `serde`. This method is not meant to be overridden.
     ///
@@ -228,17 +229,19 @@ pub trait Hex<T> {
 #[derive(Debug)]
 pub struct HexForm<T>(PhantomData<T>);
 
-impl<T> Hex<T> for HexForm<T>
+impl<T, E> Hex<T> for HexForm<T>
 where
-    T: AsRef<[u8]> + for<'a> TryFrom<&'a [u8]>,
-    for<'a> <T as TryFrom<&'a [u8]>>::Error: ToString,
+    T: AsRef<[u8]> + for<'a> TryFrom<&'a [u8], Error = E>,
+    E: fmt::Display,
 {
+    type Error = E;
+
     fn create_bytes(buffer: &T) -> Cow<'_, [u8]> {
         Cow::Borrowed(buffer.as_ref())
     }
 
-    fn from_bytes(bytes: &[u8]) -> Result<T, String> {
-        T::try_from(bytes).map_err(|e| e.to_string())
+    fn from_bytes(bytes: &[u8]) -> Result<T, Self::Error> {
+        T::try_from(bytes)
     }
 }
 
@@ -254,7 +257,7 @@ mod tests {
     use serde_json::json;
 
     use super::*;
-    use alloc::{borrow::ToOwned, vec};
+    use alloc::{borrow::ToOwned, string::String, vec};
     use core::array::TryFromSliceError;
 
     #[test]
@@ -268,13 +271,11 @@ mod tests {
         }
 
         impl TryFrom<&[u8]> for Buffer {
-            type Error = String;
+            type Error = &'static str;
 
             #[allow(clippy::map_err_ignore)]
             fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
-                <[u8; 8]>::try_from(slice)
-                    .map(Buffer)
-                    .map_err(|_| "!".to_owned())
+                <[u8; 8]>::try_from(slice).map(Buffer).map_err(|_| "!")
             }
         }
 
@@ -365,17 +366,19 @@ mod tests {
         struct BufferHex(());
 
         impl Hex<Buffer> for BufferHex {
+            type Error = &'static str;
+
             fn create_bytes(buffer: &Buffer) -> Cow<'_, [u8]> {
                 Cow::Borrowed(&buffer.0)
             }
 
-            fn from_bytes(bytes: &[u8]) -> Result<Buffer, String> {
+            fn from_bytes(bytes: &[u8]) -> Result<Buffer, Self::Error> {
                 if bytes.len() == 8 {
                     let mut inner = [0; 8];
                     inner.copy_from_slice(bytes);
                     Ok(Buffer(inner))
                 } else {
-                    Err("invalid buffer length".to_owned())
+                    Err("invalid buffer length")
                 }
             }
         }

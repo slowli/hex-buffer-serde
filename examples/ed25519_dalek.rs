@@ -13,7 +13,7 @@ use serde_derive::*;
 
 use alloc::{
     borrow::{Cow, ToOwned},
-    string::{String, ToString},
+    string::String,
 };
 
 use hex_buffer_serde::Hex;
@@ -21,12 +21,14 @@ use hex_buffer_serde::Hex;
 struct PublicKeyHex(());
 
 impl Hex<PublicKey> for PublicKeyHex {
+    type Error = ed25519::SignatureError;
+
     fn create_bytes(value: &PublicKey) -> Cow<'_, [u8]> {
         Cow::Borrowed(&*value.as_bytes())
     }
 
-    fn from_bytes(bytes: &[u8]) -> Result<PublicKey, String> {
-        PublicKey::from_bytes(bytes).map_err(|e| e.to_string())
+    fn from_bytes(bytes: &[u8]) -> Result<PublicKey, Self::Error> {
+        PublicKey::from_bytes(bytes)
     }
 }
 
