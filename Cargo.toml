@@ -16,7 +16,7 @@ documentation = "https://docs.rs/hex-buffer-serde/"
 serde = { version = "1.0", default-features = false }
 
 # Private dependencies (not exposed in the public API).
-hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
+hex = { version = "0.4.3", default-features = false }
 
 [dev-dependencies]
 serde_derive = "1.0"
@@ -29,8 +29,12 @@ ed25519 = { version = "1.0.1", package = "ed25519-dalek", features = ["serde"] }
 version-sync = "0.9.1"
 
 [features]
-default = ["std"]
-std = ["serde/std", "hex/std"]
+default = ["alloc"]
+# Enables types that depend on the `alloc` crate: `Hex` and `HexForm`.
+alloc = ["hex/alloc"]
+# Enables types that depend on const generics: `FixedHex` and `FixedHexForm`.
+# Requires Rust 1.51 or newer.
+const_len = []
 
 [workspace]
 members = [".", "wasm"]

@@ -1,11 +1,15 @@
-//! Fixed-length hex.
+//! Fixed-length hex (de)serialization.
 
-use serde::{de::{Visitor, Unexpected}, Deserializer, Serializer};
+use serde::{
+    de::{Unexpected, Visitor},
+    Deserializer, Serializer,
+};
 
 use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData};
 
 /// Analogue of [`Hex`](crate::Hex) for values that have constant-length byte presentation.
-/// This allows to avoid dependency on the `alloc` crate and expresses restriction via types.
+/// This allows to avoid dependency on the `alloc` crate and expresses the byte length constraint
+/// via types.
 ///
 /// # Examples
 ///
@@ -22,7 +26,7 @@ use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData}
 /// ```
 ///
 /// Similarly to `Hex`, it is possible to define proxies implementing `FixedHex` for external
-/// types:
+/// types, for example, keys from [`ed25519-dalek`](https://crates.io/crates/ed25519-dalek):
 ///
 /// ```
 /// use ed25519::{PublicKey, SecretKey};
@@ -40,8 +44,8 @@ use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData}
 ///
 ///     fn from_bytes(bytes: [u8; 32]) -> Result<PublicKey, Self::Error> {
 ///         PublicKey::from_bytes(&bytes)
-///         // although `bytes` always has correct length, not all 32-byte sequences
-///         // are valid Ed25519 public keys.
+///         // although `bytes` always has correct length, not all
+///         // 32-byte sequences are valid Ed25519 public keys.
 ///     }
 /// }
 ///
@@ -54,7 +58,8 @@ use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData}
 ///
 ///     fn from_bytes(bytes: [u8; 32]) -> Result<SecretKey, Self::Error> {
 ///         Ok(SecretKey::from_bytes(&bytes).unwrap())
-///         // ^ unwrap() is safe; any 32-byte sequence is a valid Ed25519 secret key.
+///         // ^ unwrap() is safe; any 32-byte sequence is a valid
+///         // Ed25519 secret key.
 ///     }
 /// }
 ///
@@ -66,6 +71,7 @@ use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData}
 ///     secret: SecretKey,
 /// }
 /// ```
+#[cfg_attr(docsrs, doc(cfg(feature = "const_len")))]
 pub trait FixedHex<T, const N: usize> {
     /// Error returned on unsuccessful deserialization.
     type Error: fmt::Display;
@@ -185,6 +191,7 @@ pub trait FixedHex<T, const N: usize> {
 
 /// A dummy container for use inside `#[serde(with)]` attribute if the underlying type
 /// implements [`FixedHex`].
+#[cfg_attr(docsrs, doc(cfg(feature = "const_len")))]
 #[derive(Debug)]
 pub struct FixedHexForm<T>(PhantomData<T>);
 
@@ -234,7 +241,9 @@ mod tests {
             "array": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
             "longer_array": "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
         });
-        let err = serde_json::from_value::<Arrays>(json).unwrap_err().to_string();
+        let err = serde_json::from_value::<Arrays>(json)
+            .unwrap_err()
+            .to_string();
 
         assert!(err.contains("invalid type"), "{}", err);
         assert!(err.contains("expected hex-encoded byte array"), "{}", err);
@@ -248,7 +257,10 @@ mod tests {
         let buffer = bincode::serialize(&ArrayHolder([5; 6])).unwrap();
         let err = bincode::deserialize::<ArrayHolder<4>>(&buffer).unwrap_err();
 
-        assert_eq!(err.to_string(), "invalid length 6, expected byte array of length 4");
+        assert_eq!(
+            err.to_string(),
+            "invalid length 6, expected byte array of length 4"
+        );
     }
 
     #[test]
@@ -284,6 +296,8 @@ mod tests {
             "public_key": "06fac1f22240cffd637ead6647188429fafda9c9cb7eae43386ac17f6111507",
         });
         let err = serde_json::from_value::<Holder>(bogus_json).unwrap_err();
-        assert!(err.to_string().contains("expected hex-encoded byte array of length 32"));
+        assert!(err
+            .to_string()
+            .contains("expected hex-encoded byte array of length 32"));
     }
 }
