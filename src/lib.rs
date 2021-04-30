@@ -257,7 +257,9 @@ where
 }
 
 #[cfg(test)]
-#[allow(clippy::unknown_clippy_lints)] // `map_err_ignore` lint is newer than MSRV
+#[allow(renamed_and_removed_lints, clippy::unknown_clippy_lints)]
+// ^ `map_err_ignore` is newer than MSRV, and `clippy::unknown_clippy_lints` is removed
+// since Rust 1.51.
 mod tests {
     use serde_derive::{Deserialize, Serialize};
     use serde_json::json;

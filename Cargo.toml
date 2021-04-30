@@ -16,7 +16,7 @@ documentation = "https://docs.rs/hex-buffer-serde/"
 serde = { version = "1.0", default-features = false }
 
 # Private dependencies (not exposed in the public API).
-hex = { version = "0.4", default-features = false }
+hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
 
 [dev-dependencies]
 serde_derive = "1.0"
