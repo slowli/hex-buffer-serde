@@ -1,6 +1,9 @@
 //! Types dependent on the `alloc` crate.
 
-use serde::{de::Visitor, Deserializer, Serializer};
+use serde::{
+    de::{Error as DeError, Unexpected, Visitor},
+    Deserializer, Serializer,
+};
 
 use alloc::{borrow::Cow, vec::Vec};
 use core::{convert::TryFrom, fmt, marker::PhantomData};
@@ -58,8 +61,6 @@ pub trait Hex<T> {
     where
         D: Deserializer<'de>,
     {
-        use serde::de::Error as DeError;
-
         struct HexVisitor;
 
         impl<'de> Visitor<'de> for HexVisitor {
@@ -70,7 +71,7 @@ pub trait Hex<T> {
             }
 
             fn visit_str<E: DeError>(self, value: &str) -> Result<Self::Value, E> {
-                hex::decode(value).map_err(E::custom)
+                hex::decode(value).map_err(|_| E::invalid_type(Unexpected::Str(value), &self))
             }
 
             // See the `deserializing_flattened_field` test for an example why this is needed.
@@ -135,39 +136,44 @@ where
 // ^ `map_err_ignore` is newer than MSRV, and `clippy::unknown_clippy_lints` is removed
 // since Rust 1.51.
 mod tests {
+    use super::*;
+
     use serde_derive::{Deserialize, Serialize};
     use serde_json::json;
 
-    use super::*;
-    use alloc::{borrow::ToOwned, string::String, vec};
+    use alloc::{
+        borrow::ToOwned,
+        string::{String, ToString},
+        vec,
+    };
     use core::array::TryFromSliceError;
+
+    #[derive(Debug, Serialize, Deserialize)]
+    struct Buffer([u8; 8]);
+
+    impl AsRef<[u8]> for Buffer {
+        fn as_ref(&self) -> &[u8] {
+            &self.0
+        }
+    }
+
+    impl TryFrom<&[u8]> for Buffer {
+        type Error = TryFromSliceError;
+
+        fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
+            <[u8; 8]>::try_from(slice).map(Buffer)
+        }
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    struct Test {
+        #[serde(with = "HexForm::<Buffer>")]
+        buffer: Buffer,
+        other_field: String,
+    }
 
     #[test]
     fn internal_type() {
-        pub struct Buffer([u8; 8]);
-
-        impl AsRef<[u8]> for Buffer {
-            fn as_ref(&self) -> &[u8] {
-                &self.0
-            }
-        }
-
-        impl TryFrom<&[u8]> for Buffer {
-            type Error = &'static str;
-
-            #[allow(clippy::map_err_ignore)]
-            fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
-                <[u8; 8]>::try_from(slice).map(Buffer).map_err(|_| "!")
-            }
-        }
-
-        #[derive(Serialize, Deserialize)]
-        struct Test {
-            #[serde(with = "HexForm::<Buffer>")]
-            buffer: Buffer,
-            other_field: String,
-        }
-
         let json = json!({ "buffer": "0001020304050607", "other_field": "abc" });
         let value: Test = serde_json::from_value(json.clone()).unwrap();
         assert!(value
@@ -182,32 +188,28 @@ mod tests {
     }
 
     #[test]
+    fn error_reporting() {
+        let bogus_jsons = vec![
+            serde_json::json!({
+                "buffer": "bogus",
+                "other_field": "test",
+            }),
+            serde_json::json!({
+                "buffer": "c0ffe",
+                "other_field": "test",
+            }),
+        ];
+
+        for bogus_json in bogus_jsons {
+            let err = serde_json::from_value::<Test>(bogus_json)
+                .unwrap_err()
+                .to_string();
+            assert!(err.contains("expected hex-encoded byte array"), "{}", err);
+        }
+    }
+
+    #[test]
     fn internal_type_with_derived_serde_code() {
-        #[derive(Serialize, Deserialize)]
-        pub struct Buffer([u8; 8]);
-
-        impl AsRef<[u8]> for Buffer {
-            fn as_ref(&self) -> &[u8] {
-                &self.0
-            }
-        }
-
-        impl TryFrom<&[u8]> for Buffer {
-            type Error = TryFromSliceError;
-
-            fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
-                <[u8; 8]>::try_from(slice).map(Buffer)
-            }
-        }
-
-        // here, a hex form should be used.
-        #[derive(Serialize, Deserialize)]
-        struct HexTest {
-            #[serde(with = "HexForm::<Buffer>")]
-            buffer: Buffer,
-            other_field: String,
-        }
-
         // ...and here, we may use original `serde` code.
         #[derive(Serialize, Deserialize)]
         struct OriginalTest {
@@ -215,7 +217,7 @@ mod tests {
             other_field: String,
         }
 
-        let test = HexTest {
+        let test = Test {
             buffer: Buffer([1; 8]),
             other_field: "a".to_owned(),
         };

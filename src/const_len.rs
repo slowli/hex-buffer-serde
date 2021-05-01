@@ -1,11 +1,11 @@
 //! Fixed-length hex (de)serialization.
 
 use serde::{
-    de::{Unexpected, Visitor},
+    de::{Error as DeError, Unexpected, Visitor},
     Deserializer, Serializer,
 };
 
-use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData};
+use core::{array::TryFromSliceError, convert::TryFrom, fmt, marker::PhantomData, mem, slice, str};
 
 /// Analogue of [`Hex`](crate::Hex) for values that have constant-length byte presentation.
 /// This allows to avoid dependency on the `alloc` crate and expresses the byte length constraint
@@ -95,8 +95,6 @@ pub trait ConstHex<T, const N: usize> {
     ///
     /// [hr]: serde::Serializer::is_human_readable()
     fn serialize<S: Serializer>(value: &T, serializer: S) -> Result<S::Ok, S::Error> {
-        use core::{mem, slice, str};
-
         // Transmutes a `u16` slice as a `u8` one. This is needed because it's currently
         // impossible to declare a buffer as `[u8; N * 2]`.
         fn as_u8_slice(slice: &mut [u16]) -> &mut [u8] {
@@ -141,8 +139,6 @@ pub trait ConstHex<T, const N: usize> {
     where
         D: Deserializer<'de>,
     {
-        use serde::de::Error as DeError;
-
         #[derive(Default)]
         struct HexVisitor<const M: usize>(PhantomData<[(); M]>);
 
