@@ -5,6 +5,17 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Added
+
+- Add `ConstHex` / `ConstHexForm` for types with constant-length
+  hex serialization (gated behind the `const_len` feature).
+  Using `ConstHex` allows avoiding dependency on the `alloc` crate.
+
+### Changed
+
+- Add `Error` associated type to the `Hex` trait to avoid mandatory `String`
+  allocations.
+
 ## 0.2.2 - 2020-12-05
 
 ### Internal improvements
