@@ -5,6 +5,8 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## 0.3.0 - 2021-05-03
+
 ### Added
 
 - Add `ConstHex` / `ConstHexForm` for types with constant-length
