@@ -11,6 +11,11 @@ description = "Helper for serializing byte buffers as hex strings in `serde`"
 repository = "https://github.com/slowli/hex-buffer-serde"
 documentation = "https://docs.rs/hex-buffer-serde/"
 
+[package.metadata.docs.rs]
+all-features = true
+# Set `docsrs` to enable unstable `doc(cfg(...))` attributes.
+rustdoc-args = ["--cfg", "docsrs"]
+
 [dependencies]
 # Public dependencies (present in the public API).
 serde = { version = "1.0", default-features = false }
