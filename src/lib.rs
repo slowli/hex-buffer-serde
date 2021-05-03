@@ -120,7 +120,7 @@
 #![no_std]
 // Documentation settings.
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.2.2")]
+#![doc(html_root_url = "https://docs.rs/hex-buffer-serde/0.3.0")]
 // Linter settings.
 #![warn(missing_docs, missing_debug_implementations)]
 #![warn(clippy::all, clippy::pedantic)]
