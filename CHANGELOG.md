@@ -16,6 +16,12 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 - Add `Error` associated type to the `Hex` trait to avoid mandatory `String`
   allocations.
 
+### Fixed
+
+- Fix no-std support: replace `std` feature with `alloc` and propagate it
+  to the `hex` crate. The `alloc` feature is required unless const generics
+  are used (see above).
+
 ## 0.2.2 - 2020-12-05
 
 ### Internal improvements
