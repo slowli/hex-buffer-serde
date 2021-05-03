@@ -140,7 +140,7 @@ pub trait ConstHex<T, const N: usize> {
         D: Deserializer<'de>,
     {
         #[derive(Default)]
-        struct HexVisitor<const M: usize>(PhantomData<[(); M]>);
+        struct HexVisitor<const M: usize>;
 
         impl<'de, const M: usize> Visitor<'de> for HexVisitor<M> {
             type Value = [u8; M];
@@ -162,7 +162,7 @@ pub trait ConstHex<T, const N: usize> {
         }
 
         #[derive(Default)]
-        struct BytesVisitor<const M: usize>(PhantomData<[(); M]>);
+        struct BytesVisitor<const M: usize>;
 
         impl<'de, const M: usize> Visitor<'de> for BytesVisitor<M> {
             type Value = [u8; M];
