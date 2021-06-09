@@ -5,6 +5,10 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+### Internal improvements
+
+- Take advantage of owned byte buffers for binary serializers.
+
 ## 0.3.0 - 2021-05-03
 
 ### Added

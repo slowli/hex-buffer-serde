@@ -92,12 +92,16 @@ pub trait Hex<T> {
             fn visit_bytes<E: DeError>(self, value: &[u8]) -> Result<Self::Value, E> {
                 Ok(value.to_vec())
             }
+
+            fn visit_byte_buf<E: DeError>(self, value: Vec<u8>) -> Result<Self::Value, E> {
+                Ok(value)
+            }
         }
 
         let maybe_bytes = if deserializer.is_human_readable() {
             deserializer.deserialize_str(HexVisitor)
         } else {
-            deserializer.deserialize_bytes(BytesVisitor)
+            deserializer.deserialize_byte_buf(BytesVisitor)
         };
         maybe_bytes.and_then(|bytes| Self::from_bytes(&bytes).map_err(D::Error::custom))
     }
