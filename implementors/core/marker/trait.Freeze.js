@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["hex_buffer_serde"] = [{"text":"impl&lt;T&gt; Freeze for <a class=\"struct\" href=\"hex_buffer_serde/struct.ConstHexForm.html\" title=\"struct hex_buffer_serde::ConstHexForm\">ConstHexForm</a>&lt;T&gt;","synthetic":true,"types":["hex_buffer_serde::const_len::ConstHexForm"]},{"text":"impl&lt;T&gt; Freeze for <a class=\"struct\" href=\"hex_buffer_serde/struct.HexForm.html\" title=\"struct hex_buffer_serde::HexForm\">HexForm</a>&lt;T&gt;","synthetic":true,"types":["hex_buffer_serde::var_len::HexForm"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
