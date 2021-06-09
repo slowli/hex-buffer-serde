@@ -5,6 +5,8 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  schedule:
+    - cron: '30 3 * * FRI'
 
 env:
   # Minimum supported Rust version.
@@ -39,7 +41,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '14'
 
       - name: Format
         uses: actions-rs/cargo@v1
