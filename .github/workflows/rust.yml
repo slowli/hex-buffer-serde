@@ -90,11 +90,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-      - name: Run example
-        uses: actions-rs/cargo@v1
-        with:
-          command: run
-          args: --example ed25519_dalek
+          args: --lib
 
   build-nostd:
     runs-on: ubuntu-latest
