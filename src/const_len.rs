@@ -122,7 +122,7 @@ pub trait ConstHex<T, const N: usize> {
             // ^ `unwrap` is safe: the length is statically correct.
             serializer.serialize_str(unsafe {
                 // SAFETY: hex output is always valid UTF-8.
-                str::from_utf8_unchecked(&hex_slice)
+                str::from_utf8_unchecked(hex_slice)
             })
         } else {
             serializer.serialize_bytes(value.as_ref())
