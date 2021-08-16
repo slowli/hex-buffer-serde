@@ -5,12 +5,10 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  schedule:
-    - cron: '30 3 * * FRI'
 
 env:
   # Minimum supported Rust version.
-  msrv: 1.41.0
+  msrv: 1.46.0
   # Nightly Rust toolchain for no-std build.
   nightly: nightly-2021-04-15
 
@@ -62,7 +60,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: run
-          args: --example ed25519_dalek --all-features
+          args: --example ed25519 --all-features
 
       - name: Compile WASM
         run: (cd wasm; wasm-pack build --target nodejs)
@@ -96,7 +94,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: run
-          args: --example ed25519_dalek
+          args: --example ed25519
 
   build-nostd:
     runs-on: ubuntu-latest

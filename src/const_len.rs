@@ -122,7 +122,7 @@ pub trait ConstHex<T, const N: usize> {
             // ^ `unwrap` is safe: the length is statically correct.
             serializer.serialize_str(unsafe {
                 // SAFETY: hex output is always valid UTF-8.
-                str::from_utf8_unchecked(&hex_slice)
+                str::from_utf8_unchecked(hex_slice)
             })
         } else {
             serializer.serialize_bytes(value.as_ref())
@@ -261,18 +261,18 @@ mod tests {
 
     #[test]
     fn custom_type() {
-        use ed25519::PublicKey;
+        use ed25519_compact::PublicKey;
 
         struct PublicKeyHex(());
         impl ConstHex<PublicKey, 32> for PublicKeyHex {
-            type Error = ed25519::SignatureError;
+            type Error = ed25519_compact::Error;
 
             fn create_bytes(pk: &PublicKey) -> [u8; 32] {
-                pk.to_bytes()
+                **pk
             }
 
             fn from_bytes(bytes: [u8; 32]) -> Result<PublicKey, Self::Error> {
-                PublicKey::from_bytes(&bytes)
+                PublicKey::from_slice(&bytes)
             }
         }
 
@@ -286,7 +286,7 @@ mod tests {
             "public_key": "06fac1f22240cffd637ead6647188429fafda9c9cb7eae43386ac17f61115075",
         });
         let holder: Holder = serde_json::from_value(json).unwrap();
-        assert_eq!(holder.public_key.as_bytes()[0], 6);
+        assert_eq!(holder.public_key[0], 6);
 
         let bogus_json = serde_json::json!({
             "public_key": "06fac1f22240cffd637ead6647188429fafda9c9cb7eae43386ac17f6111507",
