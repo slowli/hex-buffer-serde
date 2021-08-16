@@ -7,7 +7,7 @@
 
 extern crate alloc;
 
-use ed25519::{PublicKey, SecretKey};
+use ed25519_compact::PublicKey;
 use serde_derive::*;
 
 use alloc::{
@@ -20,34 +20,30 @@ use hex_buffer_serde::Hex;
 struct PublicKeyHex(());
 
 impl Hex<PublicKey> for PublicKeyHex {
-    type Error = ed25519::SignatureError;
+    type Error = ed25519_compact::Error;
 
     fn create_bytes(value: &PublicKey) -> Cow<'_, [u8]> {
-        Cow::Borrowed(&*value.as_bytes())
+        Cow::Borrowed(&value[..])
     }
 
     fn from_bytes(bytes: &[u8]) -> Result<PublicKey, Self::Error> {
-        PublicKey::from_bytes(bytes)
+        PublicKey::from_slice(bytes)
     }
 }
 
 #[derive(Serialize, Deserialize)]
 struct SomeData {
-    // Note that we have enabled `serde` feature in `Cargo.toml`. Thus,
-    // `PublicKey` implements `Serialize` / `Deserialize`, but not in the way we want
-    // (the value is just written as an array of separate bytes).
     #[serde(with = "PublicKeyHex")]
     public_key: PublicKey,
     name: Option<String>,
 }
 
 fn main() {
-    let secret_key =
-        hex::decode("9e55d1e1aa1f455b8baad9fdf975503655f8b359d542fa7e4ce84106d625b352").unwrap();
-    let secret_key = SecretKey::from_bytes(&secret_key).unwrap();
-    let public_key: PublicKey = (&secret_key).into();
+    let public_key =
+        hex::decode("06fac1f22240cffd637ead6647188429fafda9c9cb7eae43386ac17f61115075").unwrap();
+    let public_key = PublicKey::from_slice(&public_key).unwrap();
 
-    let key_hex = hex::encode(public_key.as_bytes());
+    let key_hex = hex::encode(&public_key[..]);
 
     let data = SomeData {
         public_key,
