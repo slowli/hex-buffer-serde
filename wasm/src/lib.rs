@@ -41,8 +41,9 @@ fn to_js_error(err: &impl ToString) -> JsValue {
 }
 
 #[wasm_bindgen]
-pub fn reverse(value: &JsValue) -> Result<JsValue, JsValue> {
-    let mut parsed: TestData = value.into_serde().map_err(|err| to_js_error(&err))?;
+pub fn reverse(value: JsValue) -> Result<JsValue, JsValue> {
+    let mut parsed: TestData =
+        serde_wasm_bindgen::from_value(value).map_err(|err| to_js_error(&err))?;
     parsed.reverse();
-    JsValue::from_serde(&parsed).map_err(|err| to_js_error(&err))
+    serde_wasm_bindgen::to_value(&parsed).map_err(|err| to_js_error(&err))
 }
