@@ -25,7 +25,7 @@
 //! - `alloc` (enabled by default). Enables types that depend on the `alloc` crate:
 //!   [`Hex`] and [`HexForm`].
 //! - `const_len` (disabled by default). Enables types that depend on const generics:
-//!   [`ConstHex`] and [`ConstHexForm`]. Requires Rust 1.51 or newer.
+//!   [`ConstHex`] and [`ConstHexForm`].
 //!
 //! [`sodiumoxide`]: https://crates.io/crates/sodiumoxide
 //!
