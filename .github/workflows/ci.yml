@@ -49,8 +49,15 @@ jobs:
       - name: Clippy
         uses: actions-rs/clippy-check@v1
         with:
+          name: "Clippy: all features"
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all --all-targets --all-features -- -D warnings
+          args: --workspace --all-targets --all-features -- -D warnings
+      - name: Clippy lib (default features)
+        uses: actions-rs/clippy-check@v1
+        with:
+          name: "Clippy: default features"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: -p hex-buffer-serde --lib -- -D warnings
 
       - name: Run tests
         uses: actions-rs/cargo@v1
