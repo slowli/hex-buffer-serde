@@ -1,6 +1,6 @@
 [package]
 name = "hex-buffer-serde"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 rust-version = "1.57"
 authors = ["Alex Ostrovski <ostrovski.alex@gmail.com>"]

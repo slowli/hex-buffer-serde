@@ -16,7 +16,7 @@ Add this to your `Crate.toml`:
 
 ```toml
 [dependencies]
-hex-buffer-serde = "0.3.0"
+hex-buffer-serde = "0.4.0"
 ```
 
 Basic usage:
