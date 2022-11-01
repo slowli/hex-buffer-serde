@@ -40,7 +40,7 @@ required-features = ["alloc"]
 [features]
 default = ["alloc"]
 # Enables types that depend on the `alloc` crate: `Hex` and `HexForm`.
-alloc = ["hex/alloc"]
+alloc = ["hex/alloc", "serde/alloc"]
 # Enables types that depend on const generics: `ConstHex` and `ConstHexForm`.
 # Requires Rust 1.51 or newer.
 const_len = []
