@@ -1,7 +1,8 @@
 [package]
 name = "hex-buffer-serde"
-version = "0.3.0"
-edition = "2018"
+version = "0.4.0"
+edition = "2021"
+rust-version = "1.57"
 authors = ["Alex Ostrovski <ostrovski.alex@gmail.com>"]
 readme = "README.md"
 license = "Apache-2.0"
@@ -9,7 +10,6 @@ keywords = ["serde", "hex", "encoding", "bytes"]
 categories = ["encoding", "parsing", "no-std"]
 description = "Helper for serializing byte buffers as hex strings in `serde`"
 repository = "https://github.com/slowli/hex-buffer-serde"
-documentation = "https://docs.rs/hex-buffer-serde/"
 
 [package.metadata.docs.rs]
 all-features = true

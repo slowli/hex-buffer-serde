@@ -5,6 +5,12 @@ The project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## 0.4.0 - 2022-11-01
+
+### Changed
+
+- Switch to 2021 Rust edition and bump the minimum supported Rust version to 1.57.
+
 ### Internal improvements
 
 - Take advantage of owned byte buffers for binary serializers.
