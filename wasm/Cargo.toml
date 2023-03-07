@@ -14,6 +14,6 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 hex-buffer-serde = { path = ".." }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
-serde-wasm-bindgen = "0.4.3"
+serde-wasm-bindgen = "0.5.0"
 # WASM glue
 wasm-bindgen = "0.2.83"
