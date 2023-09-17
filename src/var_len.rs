@@ -328,12 +328,13 @@ mod tests {
             z: "test".to_owned(),
         };
 
-        let bytes = serde_cbor::to_vec(&value).unwrap();
+        let mut bytes = vec![];
+        ciborium::into_writer(&value, &mut bytes).unwrap();
         let bytes_hex = hex::encode(&bytes);
         // Check that byte buffers are stored in the binary form.
         assert!(bytes_hex.contains(&"01".repeat(8)));
         assert!(bytes_hex.contains(&"00".repeat(16)));
-        let value_copy = serde_cbor::from_slice(&bytes).unwrap();
+        let value_copy = ciborium::from_reader(&bytes[..]).unwrap();
         assert_eq!(value, value_copy);
     }
 }
