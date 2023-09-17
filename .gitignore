@@ -1,7 +1,5 @@
 # Rust stuff
 /target
-**/*.rs.bk
-Cargo.lock
 
 # IDE
 /.idea
