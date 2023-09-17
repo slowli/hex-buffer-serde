@@ -33,6 +33,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+      - name: Install cargo-deny
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-deny
+          version: "^0.14"
 
       - name: Cache cargo build
         uses: actions/cache@v3
@@ -47,6 +52,9 @@ jobs:
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
       - name: Clippy lib (default features)
         run: cargo clippy -p hex-buffer-serde --lib -- -D warnings
+
+      - name: Check dependencies
+        run: cargo deny --all-features check
 
       - name: Run tests
         run: cargo test --workspace
