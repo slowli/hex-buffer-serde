@@ -103,7 +103,7 @@ pub trait ConstHex<T, const N: usize> {
                 // an empty pointer.
                 &mut []
             } else {
-                let byte_len = slice.len() * mem::size_of::<u16>();
+                let byte_len = mem::size_of_val(slice);
                 let data = (slice as *mut [u16]).cast::<u8>();
                 unsafe {
                     // SAFETY: length is trivially correct, and `[u8]` does not require
@@ -139,14 +139,13 @@ pub trait ConstHex<T, const N: usize> {
     where
         D: Deserializer<'de>,
     {
-        #[derive(Default)]
         struct HexVisitor<const M: usize>;
 
         impl<'de, const M: usize> Visitor<'de> for HexVisitor<M> {
             type Value = [u8; M];
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-                write!(formatter, "hex-encoded byte array of length {}", M)
+                write!(formatter, "hex-encoded byte array of length {M}")
             }
 
             fn visit_str<E: DeError>(self, value: &str) -> Result<Self::Value, E> {
@@ -161,14 +160,13 @@ pub trait ConstHex<T, const N: usize> {
             }
         }
 
-        #[derive(Default)]
         struct BytesVisitor<const M: usize>;
 
         impl<'de, const M: usize> Visitor<'de> for BytesVisitor<M> {
             type Value = [u8; M];
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-                write!(formatter, "byte array of length {}", M)
+                write!(formatter, "byte array of length {M}")
             }
 
             fn visit_bytes<E: DeError>(self, value: &[u8]) -> Result<Self::Value, E> {
@@ -177,9 +175,9 @@ pub trait ConstHex<T, const N: usize> {
         }
 
         let maybe_bytes = if deserializer.is_human_readable() {
-            deserializer.deserialize_str(HexVisitor::default())
+            deserializer.deserialize_str(HexVisitor)
         } else {
-            deserializer.deserialize_bytes(BytesVisitor::default())
+            deserializer.deserialize_bytes(BytesVisitor)
         };
         maybe_bytes.and_then(|bytes| Self::from_bytes(bytes).map_err(D::Error::custom))
     }

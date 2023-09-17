@@ -8,9 +8,9 @@ on:
 
 env:
   # Minimum supported Rust version.
-  msrv: 1.57.0
+  msrv: 1.66.0
   # Nightly Rust toolchain for no-std build.
-  nightly: nightly-2022-09-22
+  nightly: nightly-2023-09-09
 
 jobs:
   build:
@@ -20,25 +20,25 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          target: wasm32-unknown-unknown
-          override: true
+          targets: wasm32-unknown-unknown
           components: rustfmt, clippy
       - name: Install wasm-pack
-        uses: jetli/wasm-pack-action@v0.3.0
+        uses: jetli/wasm-pack-action@v0.4.0
         with:
           version: 'latest'
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
-      - name: Generate lockfile
-        uses: actions-rs/cargo@v1
+      - name: Install cargo-deny
+        uses: baptiste0928/cargo-install@v2
         with:
-          command: generate-lockfile
+          crate: cargo-deny
+          version: "^0.14"
+
       - name: Cache cargo build
         uses: actions/cache@v3
         with:
@@ -47,32 +47,19 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo
 
       - name: Format
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
       - name: Clippy
-        uses: actions-rs/clippy-check@v1
-        with:
-          name: "Clippy: all features"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --workspace --all-targets --all-features -- -D warnings
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
       - name: Clippy lib (default features)
-        uses: actions-rs/clippy-check@v1
-        with:
-          name: "Clippy: default features"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: -p hex-buffer-serde --lib -- -D warnings
+        run: cargo clippy -p hex-buffer-serde --lib -- -D warnings
+
+      - name: Check dependencies
+        run: cargo deny --all-features check
 
       - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test --workspace
       - name: Run example
-        uses: actions-rs/cargo@v1
-        with:
-          command: run
-          args: --example ed25519 --all-features
+        run: cargo run --example ed25519 --all-features
 
       - name: Compile WASM
         run: (cd wasm; wasm-pack build --target nodejs)
@@ -86,16 +73,10 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.msrv }}
-          override: true
-          profile: minimal
 
-      - name: Generate lockfile
-        uses: actions-rs/cargo@v1
-        with:
-          command: generate-lockfile
       - name: Cache cargo build
         uses: actions/cache@v3
         with:
@@ -104,14 +85,9 @@ jobs:
           restore-keys: ${{ runner.os }}-msrv-cargo
 
       - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test --workspace
       - name: Run example
-        uses: actions-rs/cargo@v1
-        with:
-          command: run
-          args: --example ed25519
+        run: cargo run --example ed25519
 
   build-nostd:
     runs-on: ubuntu-latest
@@ -120,17 +96,11 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.nightly }}
-          target: thumbv7m-none-eabi
-          override: true
-          profile: minimal
+          targets: thumbv7m-none-eabi
 
-      - name: Generate lockfile
-        uses: actions-rs/cargo@v1
-        with:
-          command: generate-lockfile
       - name: Cache cargo build
         uses: actions/cache@v3
         with:
@@ -139,10 +109,7 @@ jobs:
           restore-keys: ${{ runner.os }}-nostd-cargo
 
       - name: Build library
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --lib --no-default-features --features const_len --target thumbv7m-none-eabi -Z avoid-dev-deps
+        run: cargo build --lib --no-default-features --features const_len --target thumbv7m-none-eabi -Z avoid-dev-deps
 
   document:
     needs:
@@ -158,16 +125,10 @@ jobs:
           persist-credentials: false
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.nightly }}
-          override: true
-          profile: minimal
 
-      - name: Generate lockfile
-        uses: actions-rs/cargo@v1
-        with:
-          command: generate-lockfile
       - name: Cache cargo build
         uses: actions/cache@v3
         with:
