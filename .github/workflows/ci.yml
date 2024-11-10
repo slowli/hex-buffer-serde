@@ -10,7 +10,7 @@ env:
   # Minimum supported Rust version.
   msrv: 1.70.0
   # Nightly Rust toolchain for no-std build.
-  nightly: nightly-2024-04-14
+  nightly: nightly-2024-11-08
 
 jobs:
   build:
@@ -30,12 +30,12 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       - name: Install cargo-deny
         uses: baptiste0928/cargo-install@v3
         with:
           crate: cargo-deny
-          version: "^0.14"
+          version: "^0.16"
 
       - name: Cache cargo build
         uses: actions/cache@v4
