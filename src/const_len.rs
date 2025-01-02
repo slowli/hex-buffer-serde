@@ -141,7 +141,7 @@ pub trait ConstHex<T, const N: usize> {
     {
         struct HexVisitor<const M: usize>;
 
-        impl<'de, const M: usize> Visitor<'de> for HexVisitor<M> {
+        impl<const M: usize> Visitor<'_> for HexVisitor<M> {
             type Value = [u8; M];
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -162,7 +162,7 @@ pub trait ConstHex<T, const N: usize> {
 
         struct BytesVisitor<const M: usize>;
 
-        impl<'de, const M: usize> Visitor<'de> for BytesVisitor<M> {
+        impl<const M: usize> Visitor<'_> for BytesVisitor<M> {
             type Value = [u8; M];
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {

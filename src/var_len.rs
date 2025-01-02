@@ -63,7 +63,7 @@ pub trait Hex<T> {
     {
         struct HexVisitor;
 
-        impl<'de> Visitor<'de> for HexVisitor {
+        impl Visitor<'_> for HexVisitor {
             type Value = Vec<u8>;
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -82,7 +82,7 @@ pub trait Hex<T> {
 
         struct BytesVisitor;
 
-        impl<'de> Visitor<'de> for BytesVisitor {
+        impl Visitor<'_> for BytesVisitor {
             type Value = Vec<u8>;
 
             fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
