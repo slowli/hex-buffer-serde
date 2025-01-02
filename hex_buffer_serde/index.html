@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Serializing byte buffers as hex strings with `serde`."><title>hex_buffer_serde - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-590a400c.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hex_buffer_serde" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (b91a3a056 2024-11-07)" data-channel="nightly" data-search-js="search-c5a66128.js" data-settings-js="settings-0f613d39.js" ><script src="../static.files/storage-59e33391.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hex_buffer_serde/index.html">hex_<wbr>buffer_<wbr>serde</a><span class="version">0.4.0</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#problem" title="Problem">Problem</a></li><li><a href="#solution" title="Solution">Solution</a></li><li><a href="#crate-features" title="Crate Features">Crate Features</a></li><li><a href="#examples" title="Examples">Examples</a><ul><li><a href="#use-with-internal-types" title="Use with internal types">Use with internal types</a></li></ul></li></ul><h3><a href="#structs">Crate Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#traits" title="Traits">Traits</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1>Crate <span>hex_buffer_serde</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hex_buffer_serde/lib.rs.html#1-148">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Serializing byte buffers as hex strings with <code>serde</code>.</p>
+<h2 id="problem"><a class="doc-anchor" href="#problem">§</a>Problem</h2>
+<p>Sometimes, you need to serialize a byte buffer (say, a newtype around <code>[u8; 32]</code> or <code>Vec&lt;u8&gt;</code>)
+as a hex string. The problem is, the newtype in question can be defined in another crate
+(for example, cryptographic types from <a href="https://crates.io/crates/sodiumoxide"><code>sodiumoxide</code></a>), so you can’t implement <code>Serialize</code> /
+<code>Deserialize</code> for the type due to Rust orphaning rules. (Or maybe <code>Serialize</code> / <code>Deserialize</code>
+<em>are</em> implemented, but not in the desirable way.)</p>
+<h2 id="solution"><a class="doc-anchor" href="#solution">§</a>Solution</h2>
+<p>The core of this crate is the <a href="trait.Hex.html" title="trait hex_buffer_serde::Hex"><code>Hex</code></a> trait. It provides methods <code>serialize</code>
+and <code>deserialize</code>, which signatures match the ones expected by <code>serde</code>. These methods
+use the other two required methods of the trait. As all trait methods have no <code>self</code> argument,
+the trait <em>can</em> be implemented for external types; the implementor may be an empty <code>enum</code>
+designated specifically for this purpose. The implementor can then be used
+for (de)serialization with the help of the <code>#[serde(with)]</code> attribute.</p>
+<p><a href="trait.ConstHex.html" title="trait hex_buffer_serde::ConstHex"><code>ConstHex</code></a> is an analogue of <a href="trait.Hex.html" title="trait hex_buffer_serde::Hex"><code>Hex</code></a> that can be used if the serialized buffer has
+constant length known in compile time.</p>
+<h2 id="crate-features"><a class="doc-anchor" href="#crate-features">§</a>Crate Features</h2>
+<ul>
+<li><code>alloc</code> (enabled by default). Enables types that depend on the <code>alloc</code> crate:
+<a href="trait.Hex.html" title="trait hex_buffer_serde::Hex"><code>Hex</code></a> and <a href="struct.HexForm.html" title="struct hex_buffer_serde::HexForm"><code>HexForm</code></a>.</li>
+<li><code>const_len</code> (disabled by default). Enables types that depend on const generics:
+<a href="trait.ConstHex.html" title="trait hex_buffer_serde::ConstHex"><code>ConstHex</code></a> and <a href="struct.ConstHexForm.html" title="struct hex_buffer_serde::ConstHexForm"><code>ConstHexForm</code></a>.</li>
+</ul>
+<h2 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// Assume this type is defined in an external crate.
+</span><span class="kw">pub struct </span>Buffer([u8; <span class="number">8</span>]);
+
+<span class="kw">impl </span>Buffer {
+    <span class="kw">pub fn </span>from_slice(slice: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="comment">// snip
+    </span>}
+}
+
+<span class="kw">impl </span>AsRef&lt;[u8]&gt; <span class="kw">for </span>Buffer {
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
+    </span>}
+}
+
+<span class="comment">// We define in our crate:
+</span><span class="kw">use </span>hex_buffer_serde::Hex;
+<span class="kw">use </span>serde_derive::{Deserialize, Serialize};
+
+<span class="kw">struct </span>BufferHex; <span class="comment">// a single-purpose type for use in `#[serde(with)]`
+</span><span class="kw">impl </span>Hex&lt;Buffer&gt; <span class="kw">for </span>BufferHex {
+    <span class="kw">type </span>Error = <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str;
+
+    <span class="kw">fn </span>create_bytes(buffer: <span class="kw-2">&amp;</span>Buffer) -&gt; Cow&lt;[u8]&gt; {
+        buffer.as_ref().into()
+    }
+
+    <span class="kw">fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Buffer, <span class="self">Self</span>::Error&gt; {
+        Buffer::from_slice(bytes).ok_or_else(|| <span class="string">"invalid byte length"</span>)
+    }
+}
+
+<span class="attr">#[derive(Serialize, Deserialize)]
+</span><span class="kw">pub struct </span>Example {
+    <span class="attr">#[serde(with = <span class="string">"BufferHex"</span>)]
+    </span>buffer: Buffer,
+    <span class="comment">// other fields...
+</span>}
+</code></pre></div>
+<h3 id="use-with-internal-types"><a class="doc-anchor" href="#use-with-internal-types">§</a>Use with internal types</h3>
+<p>The crate could still be useful if you have control over the serialized buffer type.
+<code>Hex&lt;T&gt;</code> has a blanket implementation for types <code>T</code> satisfying certain constraints:
+<code>AsRef&lt;[u8]&gt;</code> and <code>TryFrom&lt;&amp;[u8]&gt;</code>. If these constraints are satisfied, you can
+use <code>HexForm::&lt;T&gt;</code> in <code>#[serde(with)]</code>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// It is necessary for `Hex` to be in scope in order
+// for `serde`-generated code to use its `serialize` / `deserialize` methods.
+</span><span class="kw">use </span>hex_buffer_serde::{Hex, HexForm};
+<span class="kw">use </span>core::{array::TryFromSliceError, convert::TryFrom};
+
+<span class="kw">pub struct </span>OurBuffer([u8; <span class="number">8</span>]);
+
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>[u8]&gt; <span class="kw">for </span>OurBuffer {
+    <span class="kw">type </span>Error = TryFromSliceError;
+
+    <span class="kw">fn </span>try_from(slice: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="comment">// snip
+    </span>}
+}
+
+<span class="kw">impl </span>AsRef&lt;[u8]&gt; <span class="kw">for </span>OurBuffer {
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
+    </span>}
+}
+
+<span class="attr">#[derive(Serialize, Deserialize)]
+</span><span class="kw">pub struct </span>Example {
+    <span class="attr">#[serde(with = <span class="string">"HexForm::&lt;OurBuffer&gt;"</span>)]
+    </span>buffer: OurBuffer,
+    <span class="comment">// other fields...
+</span>}
+</code></pre></div>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.ConstHexForm.html" title="struct hex_buffer_serde::ConstHexForm">Const<wbr>HexForm</a></div><div class="desc docblock-short">A dummy container for use inside <code>#[serde(with)]</code> attribute if the underlying type
+implements <a href="trait.ConstHex.html" title="trait hex_buffer_serde::ConstHex"><code>ConstHex</code></a>.</div></li><li><div class="item-name"><a class="struct" href="struct.HexForm.html" title="struct hex_buffer_serde::HexForm">HexForm</a></div><div class="desc docblock-short">A dummy container for use inside <code>#[serde(with)]</code> attribute if the underlying type
+implements <a href="trait.Hex.html" title="trait hex_buffer_serde::Hex"><code>Hex</code></a>.</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.ConstHex.html" title="trait hex_buffer_serde::ConstHex">Const<wbr>Hex</a></div><div class="desc docblock-short">Analogue of <a href="trait.Hex.html" title="trait hex_buffer_serde::Hex"><code>Hex</code></a> for values that have constant-length byte presentation.
+This allows to avoid dependency on the <code>alloc</code> crate and expresses the byte length constraint
+via types.</div></li><li><div class="item-name"><a class="trait" href="trait.Hex.html" title="trait hex_buffer_serde::Hex">Hex</a></div><div class="desc docblock-short">Provides hex-encoded (de)serialization for <code>serde</code>.</div></li></ul></section></div></main></body></html>
